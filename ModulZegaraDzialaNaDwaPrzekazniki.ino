@@ -2,22 +2,31 @@
 #include <Servo.h>
 #include <Wire.h>
 #include <DS3231.h>
-
+ // 4 lampy 
 #define PRZEKAZNIK 13
 #define PRZEKAZNIK 10
-#define PRZEKAZNIK 8
 #define PRZEKAZNIK 9
+#define PRZEKAZNIK 8
+//dla co2
+//#define PRZEKAZNIK 7 
+
 
  int minuty ;
  int godziny ;
  int sekundy ;
  
- int wloncz =6; 
- int wyloncz =18;
+ int wlonczPier =10; // godzina włączenia pierwszej lampy
+ int wylonczPier =20;
  
- int wlonczz =7; 
- int wylonczz =19;
+ int wlonczDrug =11; //godzina włączenia drugiej lampy
+ int wylonczDrug =19;
  
+ int wlonczTrze =12; //godzina włączenia trzeciej lampy
+ int wylonczTrze =18;
+ 
+ int wlonczCzwa =13; //godzina włączenia czwartej lampy
+ int wylonczCzwa =17; //godzina wyłączenia czwartej lampy
+
  int wlonczKarm1 =10;
  int wlonczKarm2 =15;
  
@@ -29,8 +38,7 @@
  Servo myservo;  // create servo object to control a servo
   DS3231 Clock;
   RTClib RTC; //modul zegara
-  DateTime  now= RTC.now();
-
+ 
 //RS do pinu 12 (en to E) E do 11 itd
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
@@ -38,22 +46,26 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 void setup(){
   lcd.begin(16, 2);
   Serial.begin(9600);
+  
   // tu podpinam przekazniki do oświetlenia 
-  pinMode(13, OUTPUT);
+  pinMode(13, OUTPUT);             //pierwsza lampa
   digitalWrite(13,HIGH);
   
-  pinMode(10, OUTPUT);
+  pinMode(10, OUTPUT);             //druga lampa
   digitalWrite(10,HIGH);
   
-  pinMode(8, OUTPUT);
-  digitalWrite(8,HIGH);
+ // pinMode(8, OUTPUT);             //trzecia
+ // digitalWrite(8,HIGH);
   
-  pinMode(9, OUTPUT);
-  digitalWrite(9,HIGH);
+  //pinMode(9, OUTPUT);            //czwarta lampa
+ // digitalWrite(9,HIGH);
+
+  //pinMode(7, OUTPUT);           //CO2
+  //digitalWrite(7,HIGH);
   
   pinMode(LED_BUILTIN, OUTPUT);               //wbudowana dioda led na plytce
 
-   myservo.attach(9);  //  pin 9 sygnal dla serwa servo 
+   myservo.attach(0);  //  pin 0 sygnal dla serwa servo 
    myservo.write(0);    //  ustawiam serwo na kąt 0 stopni          
 
 ////////////*********************************************************************************/////////// 
@@ -73,10 +85,11 @@ void setup(){
 //SEKUNDY
 //   Clock.setSecond(15);
 //////////////*********************************************************************************////////////
+ 
 }
  
 void loop(){
-    now= RTC.now();
+    DateTime  now= RTC.now();
     godziny=now.hour();
     minuty=now.minute();
     sekundy=now.second();
@@ -95,18 +108,30 @@ void loop(){
        delay(500);
        digitalWrite(LED_BUILTIN,LOW);
 
-//tu pulapki czasowe dla aktywacji przekaznikow
-   if (godziny==wloncz){
-      digitalWrite(13,LOW);  
+    //tu pulapki czasowe dla aktywacji przekaznikow
+   if (godziny>=wlonczPier){
+      digitalWrite(13,LOW);  //pierwsza lampa ON
     }
-   if (godziny==wyloncz){
-      digitalWrite(13,HIGH);
+   if (godziny>=wylonczPier){
+      digitalWrite(13,HIGH); //pierwsza lampa OFF
     }
-   if (godziny==wlonczz){
-      digitalWrite(10,LOW);  
+   if (godziny>=wlonczDrug){
+      digitalWrite(10,LOW);  //druga ON
      }
-    if (godziny==wylonczz){
-        digitalWrite(10,HIGH);
+    if (godziny>=wylonczDrug){
+        digitalWrite(10,HIGH);   //druga OFF
+    }
+    if (godziny>=wlonczTrze){
+      digitalWrite(9,LOW);  
+     }
+    if (godziny>=wylonczTrze){
+        digitalWrite(9,HIGH);
+    }
+       if (godziny>=wlonczCzwa){
+      digitalWrite(8,LOW);  
+     }
+    if (godziny>=wylonczCzwa){
+        digitalWrite(8,HIGH);
     }
  // pułapka dla serwa karmienie
   if (godziny==wlonczKarm1 && minuty ==0 && sekundy==0)
