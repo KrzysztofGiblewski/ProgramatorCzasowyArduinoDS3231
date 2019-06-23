@@ -15,19 +15,19 @@
  int godziny ;
  int sekundy ;
  
- int wlonczPier =10; // godzina włączenia pierwszej lampy
- int wylonczPier =20;
+ int wlonczPier =10;   // godzina włączenia pierwszej lampy
+ int wylonczPier =20;  //godzina wyłączenia lampy
  
- int wlonczDrug =11; //godzina włączenia drugiej lampy
+ int wlonczDrug =11;   //godzina włączenia drugiej lampy
  int wylonczDrug =19;
  
- int wlonczTrze =12; //godzina włączenia trzeciej lampy
+ int wlonczTrze =12;  //godzina włączenia trzeciej lampy
  int wylonczTrze =18;
  
- int wlonczCzwa =13; //godzina włączenia czwartej lampy
- int wylonczCzwa =17; //godzina wyłączenia czwartej lampy
+ int wlonczCzwa =13;   //godzina włączenia czwartej lampy
+ int wylonczCzwa =17;  //godzina wyłączenia czwartej lampy
 
- int wlonczKarm1 =10;
+ int wlonczKarm1 =11;
  int wlonczKarm2 =15;
  
  int serwopozycja =0;
@@ -37,9 +37,11 @@
 
  Servo myservo;  // create servo object to control a servo
   DS3231 Clock;
-  RTClib RTC; //modul zegara
+  RTClib RTC; 
+  
+  //modul zegara koniecznie 3.3V bo inaczej jest godzina 165-165-85
  
-//RS do pinu 12 (en to E) E do 11 itd
+//VSS-  VDD+   VO-do potencjometru     RS do pinu 12    RW-   (en to E) E do 11 itd   A+     K-
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
@@ -54,24 +56,25 @@ void setup(){
   pinMode(10, OUTPUT);             //druga lampa
   digitalWrite(10,HIGH);
   
- // pinMode(8, OUTPUT);             //trzecia
- // digitalWrite(8,HIGH);
+  pinMode(8, OUTPUT);             //trzecia
+  digitalWrite(8,HIGH);
   
-  //pinMode(9, OUTPUT);            //czwarta lampa
- // digitalWrite(9,HIGH);
+  pinMode(9, OUTPUT);            //czwarta lampa
+  digitalWrite(9,HIGH);
 
-  //pinMode(7, OUTPUT);           //CO2
-  //digitalWrite(7,HIGH);
+  pinMode(7, OUTPUT);           //CO2
+  digitalWrite(7,HIGH);
   
-  pinMode(LED_BUILTIN, OUTPUT);               //wbudowana dioda led na plytce
+//  pinMode(LED_BUILTIN, OUTPUT);               //wbudowana dioda led na plytce
 
    myservo.attach(0);  //  pin 0 sygnal dla serwa servo 
    myservo.write(0);    //  ustawiam serwo na kąt 0 stopni          
 
 ////////////*********************************************************************************/////////// 
 // ******* to po kolei wybraną linie odkomentować żeby ustawić zegar a potem zakomentować,  prymitywne ale dziala ;)
+//*********koniecznie podłączyć 3,3V bo przy 5V wariuje
 //ROK
-//   Clock.setYear(19);
+//  Clock.setYear(18);
 //MIESIAC
 //   Clock.setMonth(6);
 //DZIEN
@@ -81,7 +84,7 @@ void setup(){
 //GODZINA
 //   Clock.setHour(12);
 //MINUTY
-//   Clock.setMinute(54);
+//   Clock.setMinute(50);
 //SEKUNDY
 //   Clock.setSecond(15);
 //////////////*********************************************************************************////////////
@@ -104,9 +107,9 @@ void loop(){
     Serial.print(" : ");
     Serial.println(sekundy);
       
-       digitalWrite(LED_BUILTIN, HIGH); //dodałem migającą diodę wbudowanaą na płytce
-       delay(500);
-       digitalWrite(LED_BUILTIN,LOW);
+      // digitalWrite(LED_BUILTIN, HIGH); //dodałem migającą diodę wbudowanaą na płytce
+     //  delay(500);
+     //  digitalWrite(LED_BUILTIN,LOW);
 
     //tu pulapki czasowe dla aktywacji przekaznikow
    if (godziny>=wlonczPier){
@@ -127,10 +130,10 @@ void loop(){
     if (godziny>=wylonczTrze){
         digitalWrite(9,HIGH);
     }
-       if (godziny>=wlonczCzwa){
+       if (godziny>=wlonczCzwa){    //Czwarta ON
       digitalWrite(8,LOW);  
      }
-    if (godziny>=wylonczCzwa){
+    if (godziny>=wylonczCzwa){    //czwarta OFF
         digitalWrite(8,HIGH);
     }
  // pułapka dla serwa karmienie
@@ -165,16 +168,8 @@ void loop(){
     if (sekundy <10)
     lcd.print(0);
     lcd.print(sekundy);
-    lcd.print(" Karmie ");
+    lcd.print(" Karm ");
     lcd.setCursor(0,1);
-//     lcd.print(" ");
-//     lcd.print(wloncz);
-//     lcd.print("+");
-//     lcd.print(wyloncz);
-//     lcd.print(" +");
-//     lcd.print(wlonczz);
-//     lcd.print(" -");
-//     lcd.print(wylonczz);
      lcd.print("o ");
      lcd.print(wlonczKarm1);
      lcd.print(" i o ");
