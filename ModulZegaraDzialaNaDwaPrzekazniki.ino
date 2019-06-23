@@ -8,7 +8,7 @@
 #define PRZEKAZNIK 9
 #define PRZEKAZNIK 8
 //dla co2
-//#define PRZEKAZNIK 7 
+#define PRZEKAZNIK 7 
 
 
  int minuty ;
@@ -42,28 +42,54 @@
   //modul zegara koniecznie 3.3V bo inaczej jest godzina 165-165-85
  
 //VSS-  VDD+   VO-do potencjometru     RS do pinu 12    RW-   (en to E) E do 11 itd   A+     K-
-const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+const int rs = 12,
+          en = 11, 
+          d4 = 5, 
+          d5 = 4, 
+          d6 = 3, 
+          d7 = 2;
+          
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 void setup(){
   lcd.begin(16, 2);
   Serial.begin(9600);
   
-  // tu podpinam przekazniki do oświetlenia 
+  // tu podpinam przekazniki do oświetlenia zeby mieć pewność żę przekażnik w dobrym zboczu :)
+  pinMode(13, OUTPUT);             //pierwsza lampa
+  digitalWrite(13,LOW);
+  delay(1000);
   pinMode(13, OUTPUT);             //pierwsza lampa
   digitalWrite(13,HIGH);
+  delay(1000);
   
   pinMode(10, OUTPUT);             //druga lampa
+  digitalWrite(10,LOW);
+  delay(1000);
+  pinMode(10, OUTPUT);             //druga lampa
   digitalWrite(10,HIGH);
-  
+  delay(1000);
+   
+  pinMode(8, OUTPUT);             //trzecia
+  digitalWrite(8,LOW);
+  delay(1000);
   pinMode(8, OUTPUT);             //trzecia
   digitalWrite(8,HIGH);
+  delay(1000);
   
   pinMode(9, OUTPUT);            //czwarta lampa
+  digitalWrite(9,LOW);
+  delay(1000);
+  pinMode(9, OUTPUT);            //czwarta lampa
   digitalWrite(9,HIGH);
+  delay(1000);
 
+  pinMode(7, OUTPUT);            //czwarta lampa
+  digitalWrite(7,LOW);
+  delay(1000);
   pinMode(7, OUTPUT);           //CO2
   digitalWrite(7,HIGH);
+  delay(1000);
   
 //  pinMode(LED_BUILTIN, OUTPUT);               //wbudowana dioda led na plytce
 
@@ -97,7 +123,7 @@ void loop(){
     minuty=now.minute();
     sekundy=now.second();
 
- delay(500);
+ delay(1000);
  {
     //wyświetla na monitorze portu szeregowego
     Serial.print("godzina: ");
@@ -119,15 +145,15 @@ void loop(){
       digitalWrite(13,HIGH); //pierwsza lampa OFF
     }
    if (godziny>=wlonczDrug){
-      digitalWrite(10,LOW);  //druga ON
+      digitalWrite(10,LOW);                 //druga ON
      }
     if (godziny>=wylonczDrug){
-        digitalWrite(10,HIGH);   //druga OFF
+        digitalWrite(10,HIGH);              //druga OFF
     }
-    if (godziny>=wlonczTrze){
+    if (godziny>=wlonczTrze){   //trzecia ON
       digitalWrite(9,LOW);  
      }
-    if (godziny>=wylonczTrze){
+    if (godziny>=wylonczTrze){    //trzecia OFF
         digitalWrite(9,HIGH);
     }
        if (godziny>=wlonczCzwa){    //Czwarta ON
@@ -136,6 +162,18 @@ void loop(){
     if (godziny>=wylonczCzwa){    //czwarta OFF
         digitalWrite(8,HIGH);
     }
+
+     if (godziny>=wlonczDrug&&minuty%3==0){
+      digitalWrite(7,LOW);                      //CO2 ON co 3 minut
+    }
+     if (godziny>=wlonczDrug&&minuty%3!=0){
+      digitalWrite(7,HIGH);                    //CO2 OFF co 3 minut 
+    }
+    
+   if (godziny>=wylonczDrug){
+      digitalWrite(7,HIGH); //CO2 OFF na noc
+    }
+    
  // pułapka dla serwa karmienie
   if (godziny==wlonczKarm1 && minuty ==0 && sekundy==0)
   // i ilosc to ilosc przechylen serwa sypniec karmy
@@ -157,26 +195,26 @@ void loop(){
          }
 
     lcd.setCursor(0,0);
-    if (godziny <10)
+    if (godziny <10) //jak godziny od 0 do 9 to trzeba zero dopisac zeby ładnie było
     lcd.print(0);
     lcd.print(godziny);
     lcd.print(":");
-    if (minuty <10)
+    if (minuty <10) //jak minuty od 0 do 9 to trzeba zero dopisac
     lcd.print(0);
     lcd.print(minuty );
     lcd.print(":");
-    if (sekundy <10)
+    if (sekundy <10) //jak sekundy od 0 do 9 to trzeba zero dopisac
     lcd.print(0);
     lcd.print(sekundy);
     lcd.print(" Karm ");
     lcd.setCursor(0,1);
-     lcd.print("o ");
-     lcd.print(wlonczKarm1);
-     lcd.print(" i o ");
-     lcd.print(wlonczKarm2);
-     lcd.print(" *");
-     lcd.print(ilosc);
-     lcd.print("syp");
+    lcd.print("o ");
+    lcd.print(wlonczKarm1);
+    lcd.print(" i o ");
+    lcd.print(wlonczKarm2);
+    lcd.print(" *");
+    lcd.print(ilosc);
+    lcd.print("syp");
   
  }
  
