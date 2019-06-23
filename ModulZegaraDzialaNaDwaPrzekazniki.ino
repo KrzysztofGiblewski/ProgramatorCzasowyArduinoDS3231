@@ -19,7 +19,7 @@
  int wylonczPier =20;  //godzina wyłączenia lampy
  
  int wlonczDrug =11;   //godzina włączenia drugiej lampy
- int wylonczDrug =19;
+ int wylonczDrug =22;
  
  int wlonczTrze =12;  //godzina włączenia trzeciej lampy
  int wylonczTrze =18;
@@ -41,7 +41,7 @@
   
   //modul zegara koniecznie 3.3V bo inaczej jest godzina 165-165-85
  
-//VSS-  VDD+   VO-do potencjometru     RS do pinu 12    RW-   (en to E) E do 11 itd   A+     K-
+//VSS-  VDD+   VO-do potencjometru     RS do pinu 12    RW-   (en to E)E do 11 itd    A+     K-
 const int rs = 12,
           en = 11, 
           d4 = 5, 
@@ -84,7 +84,7 @@ void setup(){
   digitalWrite(9,HIGH);
   delay(1000);
 
-  pinMode(7, OUTPUT);            //czwarta lampa
+  pinMode(7, OUTPUT);            //CO2
   digitalWrite(7,LOW);
   delay(1000);
   pinMode(7, OUTPUT);           //CO2
@@ -140,6 +140,7 @@ void loop(){
     //tu pulapki czasowe dla aktywacji przekaznikow
    if (godziny>=wlonczPier){
       digitalWrite(13,LOW);  //pierwsza lampa ON
+
     }
    if (godziny>=wylonczPier){
       digitalWrite(13,HIGH); //pierwsza lampa OFF
@@ -151,26 +152,26 @@ void loop(){
         digitalWrite(10,HIGH);              //druga OFF
     }
     if (godziny>=wlonczTrze){   //trzecia ON
-      digitalWrite(9,LOW);  
+        digitalWrite(9,LOW);  
      }
     if (godziny>=wylonczTrze){    //trzecia OFF
         digitalWrite(9,HIGH);
     }
        if (godziny>=wlonczCzwa){    //Czwarta ON
-      digitalWrite(8,LOW);  
+        digitalWrite(8,LOW);  
      }
     if (godziny>=wylonczCzwa){    //czwarta OFF
         digitalWrite(8,HIGH);
     }
 
-     if (godziny>=wlonczDrug&&minuty%3==0){
-      digitalWrite(7,LOW);                      //CO2 ON co 3 minut
+     if (godziny>=wlonczDrug && minuty%2==0){
+      digitalWrite(7,LOW);      //CO2 ON co 3 minut
     }
-     if (godziny>=wlonczDrug&&minuty%3!=0){
+     if (godziny>=wlonczDrug && minuty%2!=0){
       digitalWrite(7,HIGH);                    //CO2 OFF co 3 minut 
     }
     
-   if (godziny>=wylonczDrug){
+   if (godziny>wylonczDrug){
       digitalWrite(7,HIGH); //CO2 OFF na noc
     }
     
