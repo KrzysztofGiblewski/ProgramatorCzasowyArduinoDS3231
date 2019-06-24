@@ -2,7 +2,7 @@
 #include <Servo.h>
 #include <Wire.h>
 #include <DS3231.h>
- // 4 lampy 
+// 4 lampy 
 #define PRZEKAZNIK 13
 #define PRZEKAZNIK 10
 #define PRZEKAZNIK 9
@@ -94,6 +94,8 @@ void setup(){
   pinMode(7, OUTPUT);           //CO2
   digitalWrite(7,HIGH);
   delay(1000);
+
+  pinMode(14,INPUT); //przycisk zmiany ekranu
   
 //  pinMode(LED_BUILTIN, OUTPUT);               //wbudowana dioda led na plytce
 
@@ -126,8 +128,11 @@ void loop(){
     godziny=now.hour();
     minuty=now.minute();
     sekundy=now.second();
-
- delay(1000);
+  
+  if(digitalRead(14)==HIGH){
+  zmienEkran();
+  }
+   delay(1000);     
  {
     //wyświetla na monitorze portu szeregowego
     Serial.print("godzina: ");
@@ -136,10 +141,6 @@ void loop(){
     Serial.print(minuty);
     Serial.print(" : ");
     Serial.println(sekundy);
-      
-      // digitalWrite(LED_BUILTIN, HIGH); //dodałem migającą diodę wbudowanaą na płytce
-     //  delay(500);
-     //  digitalWrite(LED_BUILTIN,LOW);
 
     //tu pulapki czasowe dla aktywacji przekaznikow
    if (godziny>=wlonczPier){
@@ -169,18 +170,19 @@ void loop(){
     }
 
      if (godziny>wlonczPier && minuty%coIleMin==0){
-      digitalWrite(7,LOW);      //CO2 ON co 3 minut
+      digitalWrite(7,LOW);                                      //CO2 ON co 3 minut
     }
      if (godziny>wlonczPier && minuty%coIleMin!=0){
-      digitalWrite(7,HIGH);                    //CO2 OFF co 3 minut 
+      digitalWrite(7,HIGH);                                   //CO2 OFF co 3 minut 
     }
     
    if (godziny>wylonczDrug){
-      digitalWrite(7,HIGH); //CO2 OFF na noc
+      digitalWrite(7,HIGH);                           //CO2 OFF na noc
     }
     
- // pułapka dla serwa karmienie
+   // pułapka dla serwa karmienie
   if (godziny==wlonczKarm1 && minuty ==0 && sekundy==0)
+  
   // i ilosc to ilosc przechylen serwa sypniec karmy
     for(int i=0; i<ilosc; i++)
     {
@@ -214,20 +216,19 @@ void loop(){
     
     switch (ekrany){
       case 0:{
-  
-    lcd.print(" Karm ");
+    lcd.print(" Karma ");
     lcd.setCursor(0,1);
     lcd.print("o ");
     lcd.print(wlonczKarm1);
     lcd.print(" i o ");
     lcd.print(wlonczKarm2);
-    lcd.print(" *");
+    lcd.print(" * ");
     lcd.print(ilosc);
-    lcd.print("syp");
+    lcd.print("  ");
      break;
     }
      case 1:{
-    lcd.print(" La ON");
+    lcd.print(" La ON ");
     lcd.setCursor(0,1);
     lcd.print(wlonczPier);
     lcd.print(" ");
@@ -236,7 +237,7 @@ void loop(){
     lcd.print(wlonczTrze);
     lcd.print(" ");
     lcd.print(wlonczCzwa);
-    lcd.print(" ");
+    lcd.print(" godz");
     break;
     }
     case 2:{
@@ -249,11 +250,11 @@ void loop(){
     lcd.print(wylonczTrze);
     lcd.print(" ");
     lcd.print(wylonczCzwa);
-    lcd.print(" ");
+    lcd.print(" godz");
     break;
     }
-     case 3:{
-    lcd.print("    CO2");
+    case 3:{
+    lcd.print("   CO2 ");
     lcd.setCursor(0,1);
     lcd.print(" co2 co ");
     lcd.print(coIleMin);
@@ -263,4 +264,10 @@ void loop(){
   
  }
  }
- }    
+ }  
+
+ void zmienEkran(){
+ekrany++;
+if(ekrany>3)
+ekrany=0;  
+ }  
