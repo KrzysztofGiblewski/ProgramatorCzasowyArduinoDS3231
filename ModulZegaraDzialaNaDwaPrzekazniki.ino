@@ -33,7 +33,8 @@
  int serwopozycja =0;
  int serwowloncz=16;
 
- int coIleMin=3;
+ int coIleMin=3;  // co ile min co2
+ int przezSekund=30; //przez ile sekund co2
 
  int ekrany=3; //zeby w zaleznosci od liczby wybrać różne ekrany
  
@@ -95,7 +96,7 @@ void setup(){
   digitalWrite(7,HIGH);
   delay(1000);
 
-  pinMode(14,INPUT); //przycisk zmiany ekranu
+  pinMode(14,INPUT_PULLUP); //przycisk zmiany ekranu
   
 //  pinMode(LED_BUILTIN, OUTPUT);               //wbudowana dioda led na plytce
 
@@ -128,10 +129,12 @@ void loop(){
     godziny=now.hour();
     minuty=now.minute();
     sekundy=now.second();
-  
-  if(digitalRead(14)==HIGH){
-  zmienEkran();
+
+    if(digitalRead(14)==LOW){
+    delay(50);
+    zmienEkran();
   }
+  
    delay(1000);     
  {
     //wyświetla na monitorze portu szeregowego
@@ -170,37 +173,24 @@ void loop(){
     }
 
      if (godziny>wlonczPier && minuty%coIleMin==0){
-      digitalWrite(7,LOW);                                      //CO2 ON co 3 minut
+      digitalWrite(7,LOW);                                      //CO2 ON co iles minut
     }
-     if (godziny>wlonczPier && minuty%coIleMin!=0){
-      digitalWrite(7,HIGH);                                   //CO2 OFF co 3 minut 
+     if (godziny>wlonczPier && minuty%coIleMin!=0 || sekundy>przezSekund){   //CO2 OFF co iles minut przez iles sekund
+      digitalWrite(7,HIGH);                                  
     }
     
    if (godziny>wylonczDrug){
-      digitalWrite(7,HIGH);                           //CO2 OFF na noc
+      digitalWrite(7,HIGH);                           //CO2 OFF na noc razem z drugim swiatlem na wszelki wypadek
     }
     
    // pułapka dla serwa karmienie
   if (godziny==wlonczKarm1 && minuty ==0 && sekundy==0)
+     karmRyby();
   
-  // i ilosc to ilosc przechylen serwa sypniec karmy
-    for(int i=0; i<ilosc; i++)
-    {
-     myservo.write(180);              
-     delay(1000);
-     myservo.write(0); 
-     delay(1000);
-        }
 
   if (godziny==wlonczKarm2 && minuty ==0 && sekundy==0)
-    for(int i=0; i<ilosc; i++)
-    {
-     myservo.write(180);              
-     delay(1000);
-     myservo.write(0); 
-     delay(1000);
-    }
-
+     karmRyby();
+    
     lcd.setCursor(0,0);
     if (godziny <10) //jak godziny od 0 do 9 to trzeba zero dopisac zeby ładnie było
     lcd.print(0);
@@ -266,8 +256,19 @@ void loop(){
  }
  }  
 
- void zmienEkran(){
-ekrany++;
-if(ekrany>3)
-ekrany=0;  
+  void zmienEkran(){
+    ekrany++;
+    if(ekrany>3)
+    ekrany=0;  
  }  
+
+ void karmRyby(){
+ // i ilosc to ilosc przechylen serwa sypniec karmy
+    for(int i=0; i<ilosc; i++)
+    {
+     myservo.write(180);              
+     delay(1000);
+     myservo.write(0); 
+     delay(1000);
+        }
+ }
