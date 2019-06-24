@@ -19,7 +19,7 @@
  int wylonczPier =20;  //godzina wyłączenia lampy
  
  int wlonczDrug =11;   //godzina włączenia drugiej lampy
- int wylonczDrug =22;
+ int wylonczDrug =19;
  
  int wlonczTrze =12;  //godzina włączenia trzeciej lampy
  int wylonczTrze =18;
@@ -32,6 +32,10 @@
  
  int serwopozycja =0;
  int serwowloncz=16;
+
+ int coIleMin=3;
+
+ int ekrany=3; //zeby w zaleznosci od liczby wybrać różne ekrany
  
  int ilosc=3;     //ile karmy podac ile razy posypać
 
@@ -157,17 +161,17 @@ void loop(){
     if (godziny>=wylonczTrze){    //trzecia OFF
         digitalWrite(9,HIGH);
     }
-       if (godziny>=wlonczCzwa){    //Czwarta ON
+    if (godziny>=wlonczCzwa){    //Czwarta ON
         digitalWrite(8,LOW);  
      }
     if (godziny>=wylonczCzwa){    //czwarta OFF
         digitalWrite(8,HIGH);
     }
 
-     if (godziny>=wlonczDrug && minuty%2==0){
+     if (godziny>wlonczPier && minuty%coIleMin==0){
       digitalWrite(7,LOW);      //CO2 ON co 3 minut
     }
-     if (godziny>=wlonczDrug && minuty%2!=0){
+     if (godziny>wlonczPier && minuty%coIleMin!=0){
       digitalWrite(7,HIGH);                    //CO2 OFF co 3 minut 
     }
     
@@ -193,7 +197,7 @@ void loop(){
      delay(1000);
      myservo.write(0); 
      delay(1000);
-         }
+    }
 
     lcd.setCursor(0,0);
     if (godziny <10) //jak godziny od 0 do 9 to trzeba zero dopisac zeby ładnie było
@@ -207,6 +211,10 @@ void loop(){
     if (sekundy <10) //jak sekundy od 0 do 9 to trzeba zero dopisac
     lcd.print(0);
     lcd.print(sekundy);
+    
+    switch (ekrany){
+      case 0:{
+  
     lcd.print(" Karm ");
     lcd.setCursor(0,1);
     lcd.print("o ");
@@ -216,7 +224,43 @@ void loop(){
     lcd.print(" *");
     lcd.print(ilosc);
     lcd.print("syp");
+     break;
+    }
+     case 1:{
+    lcd.print(" La ON");
+    lcd.setCursor(0,1);
+    lcd.print(wlonczPier);
+    lcd.print(" ");
+    lcd.print(wlonczDrug);
+    lcd.print(" ");
+    lcd.print(wlonczTrze);
+    lcd.print(" ");
+    lcd.print(wlonczCzwa);
+    lcd.print(" ");
+    break;
+    }
+    case 2:{
+    lcd.print(" La OFF");
+    lcd.setCursor(0,1);
+    lcd.print(wylonczPier);
+    lcd.print(" ");
+    lcd.print(wylonczDrug);
+    lcd.print(" ");
+    lcd.print(wylonczTrze);
+    lcd.print(" ");
+    lcd.print(wylonczCzwa);
+    lcd.print(" ");
+    break;
+    }
+     case 3:{
+    lcd.print("    CO2");
+    lcd.setCursor(0,1);
+    lcd.print(" co2 co ");
+    lcd.print(coIleMin);
+    lcd.print(" minuty ");
+    break;
+    }
   
  }
- 
+ }
  }    
