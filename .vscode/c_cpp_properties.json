@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+               "C:/Arduino",
+               "C:/Program Files (x86)/Arduino"
+             
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "cppStandard": "c++98",
+            "cStandard": "c89"
+        }
+    ],
+    "version": 4
+}
